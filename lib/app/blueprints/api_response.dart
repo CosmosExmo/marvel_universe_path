@@ -4,6 +4,7 @@ abstract class ApiResponse {
   @protected
   late int code;
   late bool status;
+  late String? errorMsg;
   late String? copyright;
   late String? attributionText;
   late String? attributionHTML;
@@ -25,6 +26,7 @@ abstract class ApiResponse {
   ApiResponse.withError(String? error) {
     code = -1;
     status = false;
+    errorMsg = error;
   }
 
   @protected

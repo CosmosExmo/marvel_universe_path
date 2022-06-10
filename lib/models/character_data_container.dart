@@ -1,4 +1,3 @@
-
 import 'package:marvel_universe_path/app/blueprints/api_response.dart';
 
 class CharacterDataContainer extends ApiResponse {
@@ -6,8 +5,8 @@ class CharacterDataContainer extends ApiResponse {
 
   CharacterDataContainer.fromMap(Map<String, dynamic> map)
       : super.fromMap(map) {
-    final List<Character> data = map['data'] != null
-        ? List<Character>.from(map['data']
+    final List<Character> data = map['data']['results'] != null
+        ? List<Character>.from(map['data']['results']
             ?.map((x) => Character.fromMap(x as Map<String, dynamic>)))
         : [];
     this.data = data;
@@ -28,7 +27,7 @@ class Character {
   final DateTime? modified;
   final String? resourceURI;
   final List<Url>? urls;
-  final Image? thumbnail;
+  final ImageData? thumbnail;
 
   Character({
     required this.id,
@@ -45,10 +44,14 @@ class Character {
       id: map['id']?.toInt() ?? 0,
       name: map['name'] ?? '',
       description: map['description'],
-      modified: map['modified'] != null ? DateTime.fromMillisecondsSinceEpoch(map['modified']) : null,
+      modified:
+          map['modified'] != null ? DateTime.tryParse(map['modified']) : null,
       resourceURI: map['resourceURI'],
-      urls: map['urls'] != null ? List<Url>.from(map['urls']?.map((x) => Url.fromMap(x))) : null,
-      thumbnail: map['thumbnail'] != null ? Image.fromMap(map['thumbnail']) : null,
+      urls: map['urls'] != null
+          ? List<Url>.from(map['urls']?.map((x) => Url.fromMap(x)))
+          : null,
+      thumbnail:
+          map['thumbnail'] != null ? ImageData.fromMap(map['thumbnail']) : null,
     );
   }
 }
@@ -62,20 +65,13 @@ class Url {
     required this.url,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'type': type,
-      'url': url,
-    };
-  }
-
   factory Url.fromMap(Map<String, dynamic> map) {
     return Url(
       type: map['type'] ?? '',
       url: map['url'] ?? '',
     );
   }
-  
+
   Url copyWith({
     String? type,
     String? url,
@@ -89,44 +85,35 @@ class Url {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
-    return other is Url &&
-      other.type == type &&
-      other.url == url;
+
+    return other is Url && other.type == type && other.url == url;
   }
 
   @override
   int get hashCode => type.hashCode ^ url.hashCode;
 }
 
-class Image {
+class ImageData {
   final String path;
   final String extension;
-  
-  Image({
+
+  ImageData({
     required this.path,
     required this.extension,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'path': path,
-      'extension': extension,
-    };
-  }
-
-  factory Image.fromMap(Map<String, dynamic> map) {
-    return Image(
+  factory ImageData.fromMap(Map<String, dynamic> map) {
+    return ImageData(
       path: map['path'] ?? '',
       extension: map['extension'] ?? '',
     );
   }
 
-  Image copyWith({
+  ImageData copyWith({
     String? path,
     String? extension,
   }) {
-    return Image(
+    return ImageData(
       path: path ?? this.path,
       extension: extension ?? this.extension,
     );
@@ -135,10 +122,10 @@ class Image {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
-    return other is Image &&
-      other.path == path &&
-      other.extension == extension;
+
+    return other is ImageData &&
+        other.path == path &&
+        other.extension == extension;
   }
 
   @override
